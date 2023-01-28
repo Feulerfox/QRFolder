@@ -1,0 +1,56 @@
+public class CustomerPopulator implements Populator<SuperCustomerModel, SuperCustomerData>{
+
+  private final Converter<SalcazzoModel, SalcazzoData> salcazzoConverter;
+
+  public CustomerPopulator(Converter<SalcazzoModel, SalcazzoData> salcazzoConverter){
+    this.salcazzoConverter = salcazzoConverter;
+  }
+
+  @Override
+  public void populate(SuperCustomerModel source, superCustomerData target){
+    SalcazzoData salcazzo = salcazzoConverter.convert(source.getSalcazzo());
+    target.setDataDiNascita(source.getDataDiNascita());
+    target.setCode(source.getCode());
+    target.setEta(calulateEta(source.getDataDiNascita));
+
+  }
+
+  public Double calulateEta(Date dataDiNascita){
+    return dataDiNascita - currentDate;
+  }
+
+}
+<bean class="com.salcazzo.data.SuperCustomerData">
+    <properties name="code" type="java.lang.String"/>
+    <properties name="dataDiNascita" type="java.util.Data"/>
+    <properties name="eta" type="java.lang.Double"/>
+</bean>
+<itemtype code="Customer" jaloClass="com.salcazzo.customer.jalo.Customer">
+    <attributes>
+        <attribute qualifier="code" type="java.lang.String">
+            <descritpion>Customer identifier</descritpion>
+            <modifiers read="true" write="true" search="true"/>
+        </attribute>
+    </attributes>
+</itemtype>
+
+<itemtype code="SuperCustomer" extends="Customer" jaloClass="com.salcazzo.customer.jalo.SuperCustomer">
+    <attributes>
+        <attribute qualifier="dataDiNascita" type="java.util.Date">
+            <descritpion>Data di nascita</descritpion>
+            <modifiers read="true" write="true" search="true"/>
+        </attribute>
+    </attributes>
+</itemtype>
+<bean id="customerPopulator" class="com.slacazzo.populators.CustomerPopulator">
+    <constractor-arg name="salcazzoConverter" ref="salcazzoConverter"/>
+</bean>
+
+<bean id="salcazzoConverter" parent="abstractPopulatorConverter">
+    <property name="targetClass" value="com.salcazzo.data.salcazzoData"></property>
+    <property name="populators">
+        <list>
+            <ref bean="salcazzoPopulator"></ref>
+        </list>
+    </property>
+</bean>
