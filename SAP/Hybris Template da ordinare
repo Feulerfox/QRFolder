@@ -1,3 +1,49 @@
+
+1.Cerco XML in cui sono definiti i tipi (-items.xml), definisco nuovo tipo o lo modifico
+<itemtype code="Customer" jaloClass="com.salcazzo.customer.jalo.Customer">
+    <attributes>
+        <attribute qualifier="code" type="java.lang.String">
+            <descritpion>Customer identifier</descritpion>
+            <modifiers read="true" write="true" search="true"/>
+        </attribute>
+    </attributes>
+</itemtype>
+
+<itemtype code="SuperCustomer" extends="Customer" jaloClass="com.salcazzo.customer.jalo.SuperCustomer">
+    <attributes>
+        <attribute qualifier="dataDiNascita" type="java.util.Date">
+            <descritpion>Data di nascita</descritpion>
+            <modifiers read="true" write="true" search="true"/>
+        </attribute>
+    </attributes>
+</itemtype>
+
+2.Faccio una build (ant clean all) nella folder bin/platform (genero item appean creato)
+
+3.Cerco dove sono definiti altri Bean (Ctr+shift+f per  "<bean class.." includendo solo xml) e cerco "populator" allo stesso modo eventualmente ricerco per "Data"
+
+<bean class="com.salcazzo.data.SuperCustomerData">
+    <properties name="code" type="java.lang.String"/>
+    <properties name="dataDiNascita" type="java.util.Data"/>
+    <properties name="eta" type="java.lang.Double"/>
+</bean>
+
+<bean id="customerPopulator" class="com.slacazzo.populators.CustomerPopulator"> // path in cui definisco la logica
+    <constractor-arg name="salcazzoConverter" ref="salcazzoConverter"/>
+</bean>
+
+<bean id="salcazzoConverter" parent="abstractPopulatorConverter">
+    <property name="targetClass" value="com.salcazzo.data.salcazzoData"></property>
+    <property name="populators">
+        <list>
+            <ref bean="salcazzoPopulator"></ref>
+        </list>
+    </property>
+</bean>
+
+
+//logica da inserire qui sotto
+
 public class CustomerPopulator implements Populator<SuperCustomerModel, SuperCustomerData>{
 
   private final Converter<SalcazzoModel, SalcazzoData> salcazzoConverter;
@@ -20,37 +66,6 @@ public class CustomerPopulator implements Populator<SuperCustomerModel, SuperCus
   }
 
 }
-<bean class="com.salcazzo.data.SuperCustomerData">
-    <properties name="code" type="java.lang.String"/>
-    <properties name="dataDiNascita" type="java.util.Data"/>
-    <properties name="eta" type="java.lang.Double"/>
-</bean>
-<itemtype code="Customer" jaloClass="com.salcazzo.customer.jalo.Customer">
-    <attributes>
-        <attribute qualifier="code" type="java.lang.String">
-            <descritpion>Customer identifier</descritpion>
-            <modifiers read="true" write="true" search="true"/>
-        </attribute>
-    </attributes>
-</itemtype>
 
-<itemtype code="SuperCustomer" extends="Customer" jaloClass="com.salcazzo.customer.jalo.SuperCustomer">
-    <attributes>
-        <attribute qualifier="dataDiNascita" type="java.util.Date">
-            <descritpion>Data di nascita</descritpion>
-            <modifiers read="true" write="true" search="true"/>
-        </attribute>
-    </attributes>
-</itemtype>
-<bean id="customerPopulator" class="com.slacazzo.populators.CustomerPopulator">
-    <constractor-arg name="salcazzoConverter" ref="salcazzoConverter"/>
-</bean>
 
-<bean id="salcazzoConverter" parent="abstractPopulatorConverter">
-    <property name="targetClass" value="com.salcazzo.data.salcazzoData"></property>
-    <property name="populators">
-        <list>
-            <ref bean="salcazzoPopulator"></ref>
-        </list>
-    </property>
-</bean>
+
